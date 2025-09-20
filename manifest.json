@@ -16,5 +16,11 @@
         "./dist/main.css"
       ]
     }
-  ]
+  ],
+  "icons": {
+    "16": "./assets/icon32.png",
+    "32": "./assets/icon32.png",
+    "48": "./assets/icon32.png",
+    "128": "./assets/icon32.png"
+  }
 }
