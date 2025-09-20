@@ -1,8 +1,8 @@
 {
-  "name": "Pixivの削除されたブックマーク追跡ツール",
+  "name": "pixivの削除されたブックマーク追跡ツール",
   "version": "1.0.0",
   "manifest_version": 3,
-  "description": "Pixivのブックマークにある削除済み・非表示イラストの検索ボタンを表示します。",
+  "description": "pixivのブックマークにある削除済み・非表示イラストの検索ボタンを表示します。",
   "content_scripts": [
     {
       "matches": [
@@ -18,9 +18,9 @@
     }
   ],
   "icons": {
-    "16": "./assets/icon32.png",
-    "32": "./assets/icon32.png",
-    "48": "./assets/icon32.png",
-    "128": "./assets/icon32.png"
+    "16": "assets/icon32.png",
+    "32": "assets/icon32.png",
+    "48": "assets/icon32.png",
+    "128": "assets/icon128.png"
   }
 }
