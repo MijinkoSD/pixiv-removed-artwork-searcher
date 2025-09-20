@@ -1,0 +1,20 @@
+{
+  "tasks": {
+    // "dev": "deno run --watch main.ts",
+    "build": "deno run --allow-read --allow-write --allow-env --allow-run esbuild.ts"
+  },
+  "imports": {
+    "esbuild": "npm:esbuild@^0.25.10"
+  },
+  "fmt": {
+    "semiColons": false,
+    "singleQuote": true,
+    "trailingCommas": "onlyMultiLine"
+  },
+  "lint": {
+    "exclude": [
+      "dist/",
+      "node_modules/"
+    ]
+  }
+}
