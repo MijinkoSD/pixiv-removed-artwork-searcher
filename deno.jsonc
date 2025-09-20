@@ -20,7 +20,10 @@
   "fmt": {
     "semiColons": false,
     "singleQuote": true,
-    "trailingCommas": "onlyMultiLine"
+    "trailingCommas": "onlyMultiLine",
+    "exclude": [
+      "*.md"
+    ]
   },
   "lint": {
   }
