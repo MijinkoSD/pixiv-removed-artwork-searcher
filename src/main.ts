@@ -1,12 +1,17 @@
 import { extensionName } from './commons.ts'
 import { addDomElement } from './domUtilities.ts'
+import { DomNotFoundError } from './errors/domNotFountError.ts'
 import {
   addButtonToBookmark,
   getBookmarkInfo,
   getBookmarkListElement,
+  isSmartPhonePage,
 } from './pixivDom.ts'
 
-const main = () => {
+/**
+ * 削除済み・非公開イラストに対して検索ボタンを追加する
+ */
+const addSearchButtons = () => {
   const bookmarks = getBookmarkListElement()
   for (const bookmark of bookmarks.children) {
     if (!(bookmark instanceof HTMLLIElement)) {
@@ -19,7 +24,7 @@ const main = () => {
     // 削除されていなければ何もしない
     if (!deleted) continue
 
-    const buttonArea = addButtonToBookmark({
+    addButtonToBookmark({
       bookmarkElement: bookmark,
       illustId,
       userId,
@@ -55,22 +60,63 @@ const loadFontAwesome = () => {
 }
 
 /**
- * ページ読み込み時の処理
+ * 検索ボタン追加処理を実行する関数 \
+ * 画面読み込みが完了していない場合は繰り返し実行する
  */
-const onLoad = () => {
-  loadFontAwesome()
+const addSearchButtonsLoader = async () => {
+  const { promise, resolve } = Promise.withResolvers<void>()
   try {
-    main()
+    addSearchButtons()
+    resolve()
   } catch (error) {
-    if (!(error instanceof DOMException)) {
+    if (!(error instanceof DomNotFoundError)) {
       throw error
     }
     // 読み込み中にDOMが変化して参照できなかった場合は１秒後にリトライ
     console.log(
       `${extensionName}: 要素が見つからなかったため１秒後にリトライします。`,
     )
-    setTimeout(onLoad, 1000)
+    setTimeout(async () => {
+      await addSearchButtonsLoader()
+      resolve()
+    }, 1000)
   }
+  // 処理完了まで待機する
+  await promise
+}
+
+/**
+ * ページ読み込み時の処理
+ */
+const onLoad = async () => {
+  if (isSmartPhonePage()) {
+    // スマホ版ページは現時点で対応していない
+    console.error(
+      `${extensionName}: スマホ版ページにはまだ対応していません。
+  機能不足に感じられた方は是非ともソースコード改修をお願いします！
+  
+  ↓プルリクエストはこちらから↓
+  https://github.com/MijinkoSD/pixiv-removed-artwork-searcher/pulls`,
+    )
+    return
+  }
+
+  let beforeUrl = location.href
+  loadFontAwesome()
+  await addSearchButtonsLoader()
+  const observer = new MutationObserver(() => {
+    // ページ遷移していなければ何もしない
+    if (beforeUrl === location.href) return
+    beforeUrl = location.href
+    console.log(
+      `${extensionName}: ページ遷移を検知したため再実行します。`,
+    )
+    addSearchButtonsLoader()
+  })
+  observer.observe(getBookmarkListElement({ getSection: true }), {
+    childList: true,
+    subtree: true,
+  })
 }
 
 // ページ読み込み時に実行

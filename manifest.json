@@ -6,7 +6,7 @@
   "content_scripts": [
     {
       "matches": [
-        "https://www.pixiv.net/users/*/bookmarks/*"
+        "https://www.pixiv.net/users/*/bookmarks/artworks*"
       ],
       "run_at": "document_idle",
       "js": [

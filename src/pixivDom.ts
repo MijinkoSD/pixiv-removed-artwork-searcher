@@ -2,7 +2,26 @@ import { extensionIdentifier } from './commons.ts'
 import { addDomElement, createDomElement } from './domUtilities.ts'
 import { DomNotFoundError } from './errors/domNotFountError.ts'
 
-export const getBookmarkListElement = () => {
+/**
+ * 開いているページがスマートフォン用のページかどうかを判定する
+ * @returns true: スマートフォン用ページ, false: PC用ページ
+ */
+export const isSmartPhonePage = () => {
+  // スマートフォン用のページは読めるIDが設定されているので、そこで判別する
+  // 多分PC版ページはReactとstyled-componentsを使っていて、
+  // スマートフォン版ページはVue.jsを使っているのでこういった差が起きている
+  return document.querySelector('body > #wrapper') !== null
+}
+
+/**
+ * ブックマーク一覧の要素を取得する
+ * @returns ブックマーク一覧の要素（ul）
+ */
+export const getBookmarkListElement = (options?: {
+  getSection?: boolean
+}) => {
+  const { getSection = false } = options ?? {}
+
   const bookmarkListSelector = `:is(
   body
   > div
@@ -12,12 +31,15 @@ export const getBookmarkListElement = () => {
   > :nth-child(1 of div)
   > :nth-child(2 of div)
   section
-  ul
-)`
+` + (getSection ? '' : 'ul') +
+    ')'
   const bookmarks = document.querySelector(bookmarkListSelector)
   if (!bookmarks) {
     throw new DomNotFoundError('ブックマークの要素が見つかりませんでした')
-  } else if (!(bookmarks instanceof HTMLUListElement)) {
+  } else if (
+    (!getSection && !(bookmarks instanceof HTMLUListElement)) ||
+    (getSection && !(bookmarks instanceof HTMLElement))
+  ) {
     throw new Error(
       'ブックマークの要素が想定された形式ではありませんでした。読み取ったWebサイトに変更があった可能性があります。',
     )
@@ -55,6 +77,10 @@ export const getBookmarkInfo = (
   }
 }
 
+/**
+ * ボタンを追加する
+ * @param options
+ */
 const addButton = (options: {
   searchUrl: string
   iconClass: string
@@ -89,6 +115,11 @@ const addButton = (options: {
   })
 }
 
+/**
+ * ブックマークの項目にボタンを追加数r
+ * @param options
+ * @returns ボタンの表示領域の要素
+ */
 export const addButtonToBookmark = (
   options: {
     bookmarkElement: HTMLLIElement
