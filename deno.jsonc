@@ -6,15 +6,25 @@
   "imports": {
     "esbuild": "npm:esbuild@^0.25.10"
   },
+  "compilerOptions": {
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "deno.ns"
+    ]
+  },
+  "exclude": [
+    "dist",
+    "node_modules"
+  ],
   "fmt": {
     "semiColons": false,
     "singleQuote": true,
-    "trailingCommas": "onlyMultiLine"
+    "trailingCommas": "onlyMultiLine",
+    "exclude": [
+      "*.md"
+    ]
   },
   "lint": {
-    "exclude": [
-      "dist/",
-      "node_modules/"
-    ]
   }
 }
