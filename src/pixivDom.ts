@@ -70,6 +70,7 @@ export const getBookmarkInfo = (
   let userId = linkElement.getAttribute('data-gtm-user-id') ?? undefined
   if (userId === '0') userId = undefined
   const illustId = linkElement.getAttribute('data-gtm-value') ??
+    // /artworks/<ID> からIDを抽出
     linkElement.getAttribute('to')?.match(/.*\/(.+?)$/)?.[1] ?? undefined
   return {
     // a要素なら生きてる
