@@ -1,6 +1,6 @@
 {
   "name": "pixivの削除されたブックマーク追跡ツール",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "manifest_version": 3,
   "description": "pixivのブックマークにある削除済み・非表示イラストの検索ボタンを表示します。",
   "content_scripts": [

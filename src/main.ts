@@ -1,4 +1,4 @@
-import { extensionName } from './commons.ts'
+import { extensionName, isOutDetailLog, printDebugLog } from './commons.ts'
 import { addDomElement } from './domUtilities.ts'
 import { DomNotFoundError } from './errors/domNotFountError.ts'
 import {
@@ -13,22 +13,32 @@ import {
  */
 const addSearchButtons = () => {
   const bookmarks = getBookmarkListElement()
+  printDebugLog('表示されているブックマーク要素: ', bookmarks)
   for (const bookmark of bookmarks.children) {
     if (!(bookmark instanceof HTMLLIElement)) {
       // リスト要素以外は参照しない
+      printDebugLog('リスト要素以外なので読み込まない: ', bookmark)
       continue
     }
     const info = getBookmarkInfo(bookmark)
-    if (!info) continue
+    if (!info) {
+      printDebugLog('ブックマーク情報の読み込みに失敗: ', bookmark)
+      continue
+    }
     const { illustId, userId, deleted } = info
     // 削除されていなければ何もしない
-    if (!deleted) continue
+    if (!deleted) {
+      printDebugLog('削除されていないと判定: ', info, bookmark)
+      continue
+    }
 
-    addButtonToBookmark({
+    const bookmarkInfo: Parameters<typeof addButtonToBookmark>[0] = {
       bookmarkElement: bookmark,
       illustId,
       userId,
-    })
+    }
+    printDebugLog('読み込んだ削除済みブックマーク情報: ', bookmarkInfo)
+    addButtonToBookmark(bookmarkInfo)
   }
 
   console.log(`${extensionName}: 拡張機能読み込み完了。`)
@@ -72,6 +82,7 @@ const addSearchButtonsLoader = async () => {
     if (!(error instanceof DomNotFoundError)) {
       throw error
     }
+    console.error(`${extensionName}:`, error)
     // 読み込み中にDOMが変化して参照できなかった場合は１秒後にリトライ
     console.log(
       `${extensionName}: 要素が見つからなかったため１秒後にリトライします。`,
