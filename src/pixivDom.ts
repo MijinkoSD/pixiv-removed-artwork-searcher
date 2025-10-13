@@ -64,15 +64,19 @@ export type BookmarkInfo = {
 export const getBookmarkInfo = (
   bookmarkElement: HTMLLIElement,
 ): BookmarkInfo | undefined => {
-  const linkElement = bookmarkElement.querySelector('[data-gtm-value]')
+  const linkElement = bookmarkElement.querySelector('[data-gtm-value]') ??
+    bookmarkElement.querySelector('[to]')
   if (!linkElement) return undefined
   let userId = linkElement.getAttribute('data-gtm-user-id') ?? undefined
   if (userId === '0') userId = undefined
+  const illustId = linkElement.getAttribute('data-gtm-value') ??
+    // /artworks/<ID> からIDを抽出
+    linkElement.getAttribute('to')?.match(/.*\/(.+?)$/)?.[1] ?? undefined
   return {
     // a要素なら生きてる
     // span要素なら削除済みもしくは非公開
     deleted: linkElement.tagName !== 'A',
-    illustId: linkElement.getAttribute('data-gtm-value') ?? undefined,
+    illustId,
     userId,
   }
 }
@@ -128,7 +132,9 @@ export const addButtonToBookmark = (
   },
 ): HTMLDivElement => {
   const { bookmarkElement, illustId, userId } = options
-  const linkElement = bookmarkElement.querySelector('[data-gtm-value]')
+  const linkElement = bookmarkElement.querySelector(
+    'li > div > div:first-child',
+  )
   if (!linkElement) {
     throw new DomNotFoundError(
       'ボタンを追加しようとした要素が見つかりませんでした。',
